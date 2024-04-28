@@ -38,6 +38,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.movement()
         self.animate()
+        self.collide_grass()
 
         self.rect.x += self.x_change
         self.collide_blocks('x')
@@ -95,6 +96,13 @@ class Player(pygame.sprite.Sprite):
                     self.rect.y = hits[0].rect.bottom
                     for sprite in self.game.all_sprites:
                         sprite.rect.y -= PLAYER_SPEED
+
+    def collide_grass(self):
+        hits = pygame.sprite.spritecollide(self, self.game.grass, False)
+        if hits:
+            encounter = random.randint(0,100)
+            if encounter == 0:
+                self.game.playing = False
 
     def animate(self):
         down_animations = [self.game.character_spritesheet.get_sprite(0, 0, self.width, self.height),
@@ -188,7 +196,7 @@ class Grass(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self._layer = GRASS_LAYER
-        self.groups = self.game.all_sprites
+        self.groups = self.game.all_sprites, self.game.grass
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x * TILE_SIZE

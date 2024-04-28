@@ -12,6 +12,9 @@ class Game:
 
         self.character_spritesheet = Spritesheet('imgs/player.png')
         self.terrain_spritesheet = Spritesheet('imgs/terrain.png')
+        self.pokemon_back = Spritesheet('imgs/pokemon_back.png')
+        self.pokemon_front = Spritesheet('imgs/pokemon_front.png')
+        self.fight_background = pygame.image.load('./imgs/fight_background.png')
 
     def createTilemap(self):
         for i, row in enumerate(tilemap):
@@ -31,8 +34,7 @@ class Game:
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.blocks = pygame.sprite.LayeredUpdates()
-        self.enemies = pygame.sprite.LayeredUpdates()
-        self.attacks = pygame.sprite.LayeredUpdates()
+        self.grass = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
 
@@ -56,10 +58,18 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        self.running = False
 
-    def game_over(self):
-        pass
+    def fight(self):
+        for sprite in self.all_sprites:
+            sprite.kill()
+
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+
+            self.screen.blit(self.fight_background, (0,0))
+            pygame.display.update()
 
     def intro_screen(self):
         pass
@@ -69,7 +79,7 @@ g.intro_screen()
 g.new()
 while g.running:
     g.main()
-    g.game_over()
+    g.fight()
 
 pygame.quit()
 sys.exit()

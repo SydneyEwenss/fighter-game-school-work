@@ -10,6 +10,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         
+        self.bulbasaur_sound = pygame.mixer.Sound('sounds/bulbasaur.wav')
+        self.charmander_sound = pygame.mixer.Sound('sounds/charmander.wav')
+        self.squirtle_sound = pygame.mixer.Sound('sounds/squirtle.wav')
+
+        self.route_music = pygame.mixer.Sound('sounds/route.wav')
+        self.fight_music = pygame.mixer.Sound('sounds/fight.wav')
 
         self.character_spritesheet = Spritesheet('imgs/player.png')
         self.terrain_spritesheet = Spritesheet('imgs/terrain.png')
@@ -57,6 +63,8 @@ class Game:
 
         self.createTilemap()
 
+        pygame.mixer.Sound.play(self.route_music)
+
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -82,14 +90,21 @@ class Game:
         for sprite in self.all_sprites:
             sprite.kill()
 
+        pygame.mixer.stop()
+
         randEnemy = random.randint(1,3)
         if randEnemy == 1:
             enemy = EnemyBulbasaur(self)
+            pygame.mixer.Sound.play(self.bulbasaur_sound)
         elif randEnemy == 2:
             enemy = EnemyCharmander(self)
+            pygame.mixer.Sound.play(self.charmander_sound)
         else:
             enemy = EnemySquirtle(self)
+            pygame.mixer.Sound.play(self.squirtle_sound)
         player = PlayerCharmander(self)
+
+        pygame.mixer.Sound.play(self.fight_music)
 
         fight_button = Button(25, 350, self.fight_btn_img, 5)
         pkmn_button = Button(345, 350, self.pkmn_btn_img, 5)
@@ -122,6 +137,8 @@ class Game:
                     pass
                 if run_button.draw(self.screen):
                     self.running = False
+
+            
 
             if self.fight_state == 'fight':
                 if scratch_button.draw(self.screen):

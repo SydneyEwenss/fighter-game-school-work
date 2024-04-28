@@ -22,13 +22,13 @@ class Game:
         self.item_btn_img = pygame.image.load('./imgs/buttons/item_button.png').convert_alpha()
         self.run_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
 
-        self.scratch_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.tackle_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.growl_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.tail_whip_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.ember_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.water_gun_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
-        self.vine_whip_btn_img = pygame.image.load('./imgs/buttons/run_button.png').convert_alpha()
+        self.scratch_btn_img = pygame.image.load('./imgs/buttons/scratch_button.png').convert_alpha()
+        self.tackle_btn_img = pygame.image.load('./imgs/buttons/tackle_button.png').convert_alpha()
+        self.growl_btn_img = pygame.image.load('./imgs/buttons/growl_button.png').convert_alpha()
+        self.tail_whip_btn_img = pygame.image.load('./imgs/buttons/tail_whip_button.png').convert_alpha()
+        self.ember_btn_img = pygame.image.load('./imgs/buttons/ember_button.png').convert_alpha()
+        self.water_gun_btn_img = pygame.image.load('./imgs/buttons/water_gun_button.png').convert_alpha()
+        self.vine_whip_btn_img = pygame.image.load('./imgs/buttons/vine_whip_button.png').convert_alpha()
 
     def createTilemap(self):
         for i, row in enumerate(tilemap):
@@ -84,6 +84,15 @@ class Game:
         enemy = EnemyBulbasaur(self)
         player = PlayerCharmander(self)
 
+        fight_button = Button(25, 350, self.fight_btn_img, 5)
+        pkmn_button = Button(345, 350, self.pkmn_btn_img, 5)
+        item_button = Button(25, 415, self.item_btn_img, 5)
+        run_button = Button(345, 415, self.run_btn_img, 5)
+
+        scratch_button = Button(25, 350, self.scratch_btn_img, 5)
+        growl_button = Button(345, 350, self.growl_btn_img, 5)
+        ember_button = Button(25, 415, self.ember_btn_img, 5)
+
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -91,15 +100,9 @@ class Game:
 
             self.screen.blit(self.fight_background, (0,0))
 
-            fight_button = Button(25, 350, self.fight_btn_img, 5)
-            pkmn_button = Button(345, 350, self.pkmn_btn_img, 5)
-            item_button = Button(25, 415, self.item_btn_img, 5)
-            run_button = Button(345, 415, self.run_btn_img, 5)
-
             if self.fight_state == 'main':
                 if fight_button.draw(self.screen):
                     self.fight_state = 'fight'
-                    player.hp -= 8
                 if pkmn_button.draw(self.screen):
                     pass
                 if item_button.draw(self.screen):
@@ -108,7 +111,52 @@ class Game:
                     self.running = False
 
             if self.fight_state == 'fight':
-                pass
+                if scratch_button.draw(self.screen):
+                    self.fight_state = 'text'
+                    player.scratch(enemy)
+                    if enemy.hp <= 0:
+                        self.fight_state = 'win'
+                    else:
+                        enemy.attackPlayer(player)
+                        if player.hp <= 0:
+                            self.fight_state = 'lose'
+                        else:
+                            self.fight_state = 'main'
+                if growl_button.draw(self.screen):
+                    player.growl(enemy)
+                    if enemy.hp <= 0:
+                        self.fight_state = 'win'
+                    else:
+                        enemy.attackPlayer(player)
+                        if player.hp <= 0:
+                            self.fight_state = 'lose'
+                        else:
+                            self.fight_state = 'main'
+                if ember_button.draw(self.screen):
+                    player.ember(enemy)
+                    if enemy.hp <= 0:
+                        self.fight_state = 'win'
+                    else:
+                        enemy.attackPlayer(player)
+                        if player.hp <= 0:
+                            self.fight_state = 'lose'
+                        else:
+                            self.fight_state = 'main'
+
+            if self.fight_state == 'text':
+                self.all_sprites.draw(self.screen)
+                self.update()
+                pygame.display.update()
+
+            if self.fight_state == 'win':
+                enemy.hp = 0
+                self.draw_text(f"{enemy.name} blacked out.", FONT, BLACK, 25, 375)
+                self.draw_text(f"{player.name} wins!", FONT, BLACK, 25, 400)
+
+            if self.fight_state == 'lose':
+                player.hp = 0
+                self.draw_text(f"{player.name} blacked out.", FONT, BLACK, 25, 375)
+                self.draw_text(f"{enemy.name} wins!", FONT, BLACK, 25, 400)
 
             self.all_sprites.draw(self.screen)
             self.clock.tick(FPS)

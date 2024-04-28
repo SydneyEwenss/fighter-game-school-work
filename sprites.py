@@ -163,7 +163,9 @@ class EnemyBulbasaur(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)
 
+        self.name = 'BULBASAUR'
         self.hp = 45
+        self.maxhp = 45
         self.attack = 49
         self.defense = 49
         self.speed = 45
@@ -178,20 +180,34 @@ class EnemyBulbasaur(pygame.sprite.Sprite):
         self.rect.y = self.y
 
     def update(self):
-        self.game.draw_text("BULBASAUR", FONT, BLACK, 60, 10)
+        self.game.draw_text(self.name, FONT, BLACK, 65, 10)
+        self.hp_text = FONT.render(f"{self.hp} / {self.maxhp}", 0, BLACK)
+        self.game.screen.blit(self.hp_text, (65,40))
 
-    def attack(self, opponent):
-        option = random.randint(1,3)
-        if option == 1:
+    def attackPlayer(self, opponent):
+        attackOption = random.randint(0,3)
+        if attackOption == 1:
             self.tackle(opponent)
-        elif option == 2:
+        elif attackOption == 2:
             self.growl(opponent)
         else:
             self.vine_whip(opponent)
 
     def tackle(self, opponent):
         power = 40
-        damage = ((4 * power) / power + 2)
+        damage = math.floor(((4 * power) / power + 2))
+        opponent.hp -= damage
+        print('tackle')
+
+    def growl(self, opponent):
+        opponent.attack -= (opponent.attack / 0.1)
+        print('growl')
+
+    def vine_whip(self, opponent):
+        power = 35
+        damage = math.floor(((4 * power) / power + 2))
+        opponent.hp -= damage
+        print('vine whip')
 
 class PlayerCharmander(pygame.sprite.Sprite):
     def __init__(self, game):
@@ -201,7 +217,12 @@ class PlayerCharmander(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)
 
-        self.hp = 20
+        self.name = 'CHARMANDER'
+        self.hp = 39
+        self.maxhp = 39
+        self.attack = 52
+        self.defense = 43
+        self.speed = 65
 
         self.x = 50
         self.y = 160
@@ -214,9 +235,25 @@ class PlayerCharmander(pygame.sprite.Sprite):
         
 
     def update(self):
-        self.game.draw_text("CHARMANDER", FONT, BLACK, 350, 220)
-        self.hp_text = FONT.render(f"{self.hp}/ 20", 0, BLACK)
+        self.game.draw_text(self.name, FONT, BLACK, 350, 220)
+        self.hp_text = FONT.render(f"{self.hp} / {self.maxhp}", 0, BLACK)
         self.game.screen.blit(self.hp_text, (350,250))
+
+    def scratch(self, opponent):
+        power = 35
+        damage = math.floor(((4 * power) / power + 2))
+        opponent.hp -= damage
+
+        
+        self.game.draw_text(f"{self.name} used scratch", FONT, BLACK, 25, 375)
+
+    def growl(self, opponent):
+        opponent.attack -= (opponent.attack / 0.1)
+
+    def ember(self, opponent):
+        power = 40
+        damage = math.floor(((4 * power) / power + 2))
+        opponent.hp -= damage
                 
 
 class Block(pygame.sprite.Sprite):

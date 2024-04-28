@@ -154,6 +154,69 @@ class Player(pygame.sprite.Sprite):
                     self.animation_loop = 0
                 self.image = right_animations[math.floor(self.animation_loop)]
                 self.animation_loop += 0.1
+
+class EnemyBulbasaur(pygame.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        self.width = 56
+        self.height= 56
+        self.groups = self.game.all_sprites
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.hp = 45
+        self.attack = 49
+        self.defense = 49
+        self.speed = 45
+
+        self.x = 400
+        self.y = -50
+
+        self.image = self.game.pokemon_front.get_sprite(0,0,self.width,self.height)
+        self.image = pygame.transform.scale(self.image, (224,224))
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+    def update(self):
+        self.game.draw_text("BULBASAUR", FONT, BLACK, 60, 10)
+
+    def attack(self, opponent):
+        option = random.randint(1,3)
+        if option == 1:
+            self.tackle(opponent)
+        elif option == 2:
+            self.growl(opponent)
+        else:
+            self.vine_whip(opponent)
+
+    def tackle(self, opponent):
+        power = 40
+        damage = ((4 * power) / power + 2)
+
+class PlayerCharmander(pygame.sprite.Sprite):
+    def __init__(self, game):
+        self.game = game
+        self.width = 32
+        self.height= 32
+        self.groups = self.game.all_sprites
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.hp = 20
+
+        self.x = 50
+        self.y = 160
+
+        self.image = self.game.pokemon_back.get_sprite(32,0,self.width,self.height)
+        self.image = pygame.transform.scale(self.image, (160,160))
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+        
+
+    def update(self):
+        self.game.draw_text("CHARMANDER", FONT, BLACK, 350, 220)
+        self.hp_text = FONT.render(f"{self.hp}/ 20", 0, BLACK)
+        self.game.screen.blit(self.hp_text, (350,250))
                 
 
 class Block(pygame.sprite.Sprite):

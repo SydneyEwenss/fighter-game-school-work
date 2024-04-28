@@ -1,7 +1,13 @@
+import pygame
+
+pygame.font.init()
+
 WIN_WIDTH = 640
 WIN_HEIGHT = 480
 TILE_SIZE = 32
 FPS = 60
+
+FONT = pygame.font.Font("Minecraft.ttf", 30)
 
 PLAYER_LAYER = 4
 GRASS_LAYER = 3

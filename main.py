@@ -9,7 +9,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
-        self.fight_state = 'main'
+        
 
         self.character_spritesheet = Spritesheet('imgs/player.png')
         self.terrain_spritesheet = Spritesheet('imgs/terrain.png')
@@ -49,6 +49,7 @@ class Game:
 
     def new(self):
         self.playing = True
+        self.fight_state = 'main'
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.blocks = pygame.sprite.LayeredUpdates()
@@ -81,7 +82,13 @@ class Game:
         for sprite in self.all_sprites:
             sprite.kill()
 
-        enemy = EnemyBulbasaur(self)
+        randEnemy = random.randint(1,3)
+        if randEnemy == 1:
+            enemy = EnemyBulbasaur(self)
+        elif randEnemy == 2:
+            enemy = EnemyCharmander(self)
+        else:
+            enemy = EnemySquirtle(self)
         player = PlayerCharmander(self)
 
         fight_button = Button(25, 350, self.fight_btn_img, 5)
@@ -100,6 +107,12 @@ class Game:
 
             self.screen.blit(self.fight_background, (0,0))
 
+            enemy_healthbar = HealthBar(self, 70, 60, enemy.hp, enemy.maxhp)
+            player_healthbar = HealthBar(self, 360, 280, player.hp, player.maxhp)
+
+            enemy_healthbar.draw(enemy.hp)
+            player_healthbar.draw(player.hp)
+
             if self.fight_state == 'main':
                 if fight_button.draw(self.screen):
                     self.fight_state = 'fight'
@@ -112,7 +125,6 @@ class Game:
 
             if self.fight_state == 'fight':
                 if scratch_button.draw(self.screen):
-                    self.fight_state = 'text'
                     player.scratch(enemy)
                     if enemy.hp <= 0:
                         self.fight_state = 'win'
@@ -143,20 +155,21 @@ class Game:
                         else:
                             self.fight_state = 'main'
 
-            if self.fight_state == 'text':
-                self.all_sprites.draw(self.screen)
-                self.update()
-                pygame.display.update()
-
             if self.fight_state == 'win':
                 enemy.hp = 0
                 self.draw_text(f"{enemy.name} blacked out.", FONT, BLACK, 25, 375)
                 self.draw_text(f"{player.name} wins!", FONT, BLACK, 25, 400)
 
+                if pygame.mouse.get_pressed()[0] == 1:
+                    self.running = False
+
             if self.fight_state == 'lose':
                 player.hp = 0
                 self.draw_text(f"{player.name} blacked out.", FONT, BLACK, 25, 375)
                 self.draw_text(f"{enemy.name} wins!", FONT, BLACK, 25, 400)
+
+                if pygame.mouse.get_pressed()[0] == 1:
+                    self.running = False
 
             self.all_sprites.draw(self.screen)
             self.clock.tick(FPS)
